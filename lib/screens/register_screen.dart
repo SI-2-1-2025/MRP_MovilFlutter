@@ -4,6 +4,7 @@ import 'package:mrp_aplicacion_movil_flutter/bloc/register/register_bloc.dart';
 import 'package:mrp_aplicacion_movil_flutter/bloc/register/register_event.dart';
 import 'package:mrp_aplicacion_movil_flutter/bloc/register/register_state.dart';
 
+
 class RegisterScreen extends StatelessWidget {
 
     RegisterScreen({Key? key}) : super(key: key);
@@ -17,15 +18,26 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = context.read<RegisterBloc>();
+    print('RegisterBloc encontrado: $bloc');
     return BlocConsumer<RegisterBloc, RegisterState>(
       listener: (context, state) {
         if (state is RegisterSuccess) {
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registro exitoso'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
         }
         if (state is RegisterFailure) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(state.error)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -215,13 +227,23 @@ class RegisterScreen extends StatelessWidget {
     return ElevatedButton(
       onPressed: () {
         if (_formKey.currentState!.validate()) {
+          if (_passwordController.text != _confirmPasswordController.text) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Las contraseñas no coinciden'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+          
           context.read<RegisterBloc>().add(
             RegisterButtonPressed(
-              nombre: _nameController.text,
-              apellido: _lastnameController.text,
-              telefono: _phoneController.text,
-              email: _emailController.text,
-              password: _passwordController.text,
+              nombre: _nameController.text.trim(),
+              apellido: _lastnameController.text.trim(),
+              email: _emailController.text.trim(),
+              telefono: _phoneController.text.trim(),
+              password: _passwordController.text.trim(),
             ),
           );
         }

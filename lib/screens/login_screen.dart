@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mrp_aplicacion_movil_flutter/bloc/auth/auth_state.dart';
-import 'package:mrp_aplicacion_movil_flutter/screens/home_screen.dart';
+import 'package:mrp_aplicacion_movil_flutter/screens/product_list_screen.dart';
+import 'package:mrp_aplicacion_movil_flutter/bloc/producto/producto_bloc.dart';
+import 'package:mrp_aplicacion_movil_flutter/bloc/register/register_bloc.dart';
+import 'package:mrp_aplicacion_movil_flutter/repositories/auth_repository.dart';
+import 'package:mrp_aplicacion_movil_flutter/screens/register_screen.dart';
 import '../../bloc/auth/auth_bloc.dart';
 import '../../bloc/auth/auth_event.dart';
 
 class LoginScreen extends StatelessWidget {
+   LoginScreen({Key? key}) : super(key: key);
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -16,21 +22,33 @@ class LoginScreen extends StatelessWidget {
       listener: (context, state) {
         if (state is AuthSuccess) {
           print('Estado: AuthSuccess');
-          Navigator.push(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (context) => BlocProvider.value(
-                value: BlocProvider.of<AuthBloc>(context),
-                child: HomeScreen(),
+              builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(
+                    value: BlocProvider.of<AuthBloc>(context),
+                  ),
+                  BlocProvider.value(
+                    value: BlocProvider.of<ProductoBloc>(context),
+                  ),
+                ],
+                child: ProductListScreen(),
               ),
             ),
+            (route) => false,
           );
         }
         if (state is AuthFailure) {
           print('Error: ${state.error}');
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(state.error)));
+            ..showSnackBar(SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 5),
+            ));
         }
       },
       builder: (context, state) {
@@ -61,6 +79,7 @@ class LoginScreen extends StatelessWidget {
                           _buttonGoToRegister(context),
 
                         ],
+
                       ),
                     ),
                   ),
@@ -135,34 +154,38 @@ class LoginScreen extends StatelessWidget {
         if (value!.isEmpty) return 'La contraseña es requerida';
         return null;
       },
+
     );
   }
 
   Widget _buttonLogin(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        //if (_formKey.currentState!.validate()) {
-          context.read<AuthBloc>().add(
-            LoginButtonPressed(
-              email: _emailController.text,
-              password: _passwordController.text,
-              //email: 'ww@gmail.com',
-              //password: '123456789',
-            ),
-          );
-        //}//
-      },
+    return Column(
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              print('Intentando login con: ${_emailController.text}');
+              context.read<AuthBloc>().add(
+                LoginButtonPressed(
+                  email: _emailController.text.trim(),
+                  password: _passwordController.text.trim(),
+                ),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            fixedSize: Size(double.infinity, 55),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
 
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green,
-        fixedSize: Size(double.infinity, 55),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-      child: Text(
-        'INICIAR SESIÓN',
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-      ),
+          child: Text(
+            'INICIAR SESIÓN',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+        ),
 
+      ],
     );
   }
 
@@ -189,7 +212,7 @@ class LoginScreen extends StatelessWidget {
       ],
     );
   }
- //me lleva a la otra vista
+
   Widget _buttonGoToRegister(BuildContext context) {
     return ElevatedButton(
       onPressed: () => Navigator.pushNamed(context, '/register'),

@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
         if (state is AuthSuccess) {
           return _buildHomeContent(context, state.user);
         }
-        return Scaffold(body: Center(child: Text('Cargando...')));
+        return Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
   }
@@ -22,6 +22,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Bienvenido'),
+        backgroundColor: Colors.green,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -33,7 +34,6 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.all(24),
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/img/background3.jpg'),
@@ -44,46 +44,63 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.person, size: 60, color: Colors.grey),
-              ),
-              SizedBox(height: 20),
-              Text(
-                '¡Hola, ${user.nombre} ${user.apellido}!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person, size: 80, color: Colors.grey),
                 ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Email: ${user.email}',
-                style: TextStyle(color: Colors.white),
-              ),
-              Text(
-                'Rol: ${user.role.nombre}',
-                style: TextStyle(color: Colors.white),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(LogoutEvent());
-                  Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  minimumSize: Size.fromHeight(50),
+                SizedBox(height: 20), // Mantener un espacio razonable
+                Text(
+                  '¡Hola, ${user.nombre} ${user.apellido}!',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-                child: Text('Cerrar Sesión'),
-              ),
-            ],
+                SizedBox(height: 10), // Mantener un espacio razonable
+                Text(
+                  'Email: ${user.email}',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Text(
+                  'Rol: ${user.role.nombre}',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Spacer(), // Expandir el contenido hacia abajo
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, '/products'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.shopping_cart, color: Colors.white),
+                      SizedBox(width: 10),
+                      Text(
+                        'Ver Productos',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
