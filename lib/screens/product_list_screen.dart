@@ -72,47 +72,39 @@ class ProductListScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.green,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 40, color: Colors.grey),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Menú',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'Menú Principal',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
               ),
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Mi Perfil'),
-              onTap: () {
-                Navigator.pushNamed(context, '/profile');
-              },
             ),
             ListTile(
               leading: Icon(Icons.shopping_cart),
               title: Text('Mi Carrito'),
               onTap: () {
+                Navigator.pop(context); // Cerrar drawer
                 Navigator.pushNamed(context, '/carrito');
               },
             ),
             ListTile(
-              leading: Icon(Icons.inventory),
-              title: Text('Catálogo'),
+              leading: Icon(Icons.shopping_bag),
+              title: Text('Mis Pedidos'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // Cerrar drawer
+                Navigator.pushNamed(context, '/pedidos');
               },
             ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Mi Perfil'),
+              onTap: () {
+                Navigator.pop(context); // Cerrar drawer
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+            Divider(),
             ListTile(
               leading: Icon(Icons.exit_to_app),
               title: Text('Cerrar Sesión'),
