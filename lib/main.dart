@@ -3,23 +3,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mrp_aplicacion_movil_flutter/bloc/auth/auth_bloc.dart';
 import 'package:mrp_aplicacion_movil_flutter/bloc/producto/producto_bloc.dart';
 import 'package:mrp_aplicacion_movil_flutter/bloc/register/register_bloc.dart';
+import 'package:mrp_aplicacion_movil_flutter/bloc/carrito/carrito_bloc.dart';
 //import 'package:mrp_aplicacion_movil_flutter/bloc/register/register_bloc.dart';
 import 'package:mrp_aplicacion_movil_flutter/repositories/auth_repository.dart';
 import 'package:mrp_aplicacion_movil_flutter/services/producto_service.dart';
+import 'package:mrp_aplicacion_movil_flutter/services/carrito_service.dart';
 import 'package:mrp_aplicacion_movil_flutter/screens/product_list_screen.dart';
 import 'package:mrp_aplicacion_movil_flutter/screens/register_screen.dart';
 import 'package:mrp_aplicacion_movil_flutter/screens/profile_screen.dart';
+import 'package:mrp_aplicacion_movil_flutter/screens/carrito_screen.dart';
 
 import 'screens/login_screen.dart';
 
 void main() {
   final authRepository = AuthRepository();
+  final carritoService = CarritoService();
   
   runApp(
     MultiRepositoryProvider(
       providers: [
         RepositoryProvider.value(
           value: authRepository,
+        ),
+        RepositoryProvider.value(
+          value: carritoService,
         ),
       ],
       child: MultiBlocProvider(
@@ -29,6 +36,9 @@ void main() {
           ),
           BlocProvider(
             create: (context) => ProductoBloc(ProductoService()),
+          ),
+          BlocProvider(
+            create: (context) => CarritoBloc(carritoService: carritoService),
           ),
         ],
         child: const MyApp(),
@@ -58,6 +68,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) =>  LoginScreen());
           case '/products':
             return MaterialPageRoute(builder: (_) =>  ProductListScreen());
+          case '/carrito':
+            return MaterialPageRoute(builder: (_) => CarritoScreen());
           case '/profile':
             return MaterialPageRoute(builder: (_) => ProfileScreen());
           case '/register':

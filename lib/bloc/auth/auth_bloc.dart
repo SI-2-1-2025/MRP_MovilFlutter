@@ -20,10 +20,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         print('Respuesta exitosa del repositorio');
         print('Usuario autenticado: ${user.email}');
         
-        // Guardar el token
+        // Guardar el token y el userId
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', user.token);
-        print('Token guardado en SharedPreferences');
+        await prefs.setInt('userId', user.id);
+        print('Token y userId guardados en SharedPreferences');
+        print('UserId guardado: ${user.id}');
         
         emit(AuthSuccess(user: user));
       } catch (e) {
@@ -33,9 +35,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<LogoutEvent>((event, emit) async {
-      // Limpiar el token al cerrar sesión
+      // Limpiar el token y userId al cerrar sesión
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('token');
+      await prefs.remove('userId');
       emit(AuthInitial());
     });
   }

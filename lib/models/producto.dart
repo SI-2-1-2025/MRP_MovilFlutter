@@ -16,6 +16,7 @@ class Material {
 }
 
 class Producto {
+  final int? id;
   final String nombre;
   final String descripcion;
   final int stock;
@@ -26,6 +27,7 @@ class Producto {
   final List<Material> materiales;
 
   Producto({
+    this.id,
     required this.nombre,
     required this.descripcion,
     required this.stock,
@@ -42,6 +44,7 @@ class Producto {
         .toList() ?? [];
 
     return Producto(
+      id: json['id'],
       nombre: json['nombre'],
       descripcion: json['descripcion'],
       stock: json['stock'],
